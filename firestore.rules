@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /players/{uid} {
+      // Ranking público: qualquer pessoa pode ler
+      allow read: if true;
+
+      // Cria o próprio perfil (apelido de 2 a 15 caracteres)
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['nickname','wins','gamesPlayed','createdAt'])
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 2
+        && request.resource.data.nickname.size() <= 15
+        && request.resource.data.wins == 0
+        && request.resource.data.gamesPlayed == 0;
+
+      // Atualiza só o próprio perfil; apelido fica fixo; recorde só pode melhorar
+      allow update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['wins','gamesPlayed','bestAttempts','bestAt'])
+        && request.resource.data.gamesPlayed == resource.data.gamesPlayed + 1
+        && request.resource.data.wins - resource.data.wins in [0, 1]
+        && (!('bestAttempts' in request.resource.data) ||
+            (request.resource.data.bestAttempts is int
+             && request.resource.data.bestAttempts >= 1
+             && request.resource.data.bestAttempts <= 10))
+        && (!('bestAttempts' in resource.data) ||
+            request.resource.data.bestAttempts <= resource.data.bestAttempts);
+
+      // Histórico: só o dono lê e cria; ninguém edita ou apaga
+      match /games/{gameId} {
+        allow read: if request.auth != null && request.auth.uid == uid;
+        allow create: if request.auth != null && request.auth.uid == uid
+          && request.resource.data.attempts is int
+          && request.resource.data.attempts >= 1
+          && request.resource.data.attempts <= 10
+          && request.resource.data.won is bool;
+      }
+    }
+  }
+}

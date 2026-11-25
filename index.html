@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cofre – jogo do número secreto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;800&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>Cofre</h1>
+    <p id="who" hidden></p>
+  </header>
+
+  <section id="login">
+    <p>Escolha um apelido para entrar no ranking. Sem senha, sem cadastro.</p>
+    <form id="loginForm">
+      <input id="nick" minlength="2" maxlength="15" required placeholder="Seu apelido" autocomplete="off">
+      <button>Entrar</button>
+    </form>
+  </section>
+
+  <div id="app" hidden>
+    <section id="game">
+      <div class="range" aria-hidden="true">
+        <span id="lo">1</span>
+        <div class="track"><i id="fill"></i></div>
+        <span id="hi">100</span>
+      </div>
+      <p id="feedback" class="feedback" aria-live="polite"></p>
+      <div id="pins" class="pins" aria-label="Tentativas usadas"></div>
+      <form id="guessForm">
+        <input id="guess" type="number" inputmode="numeric" min="1" max="100" required placeholder="?">
+        <button id="guessBtn">Tentar</button>
+      </form>
+      <button id="again" hidden>Jogar de novo</button>
+    </section>
+
+    <aside>
+      <div class="stats">
+        <div><b id="sBest">–</b><span>recorde</span></div>
+        <div><b id="sWins">0</b><span>vitórias</span></div>
+        <div><b id="sGames">0</b><span>partidas</span></div>
+      </div>
+      <h2>Ranking</h2>
+      <ol id="ranking" class="list"></ol>
+      <h2>Suas últimas partidas</h2>
+      <ul id="history" class="list"></ul>
+    </aside>
+  </div>
+  <p id="error" class="error" role="alert" hidden></p>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
